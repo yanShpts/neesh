@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import { Box } from './Main.jsx'
+import {Main} from './App.js'
+import { Lists } from './App.js';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>  
-    <Box />
+    <Main />
+    <Lists/>
   </React.StrictMode>
 );
 
