@@ -1,18 +1,37 @@
-from flask import Flask, request, jsonify
-import pandas as pd
+from fastapi import FastAPI, Request
+import uvicorn
+import pandas as pd 
 from pytrends.request import TrendReq
+from fastapi.middleware.cors import CORSMiddleware
 
-app = Flask(__name__)
+app = FastAPI()
 
-# Initialize a DataFrame to store entries and scores
+# This middleware is required in order to accept requests from other domains such as a React app running on 'localhost:3000'
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def root():
+    return({ "message": "hello world" })
+
 df = pd.DataFrame(columns=['interest', 'score'])
 
+
+
 # PyTrends API Route
-@app.route("/pytrends", methods=['POST'])
-def trend_data():
+@app.post("/pytrends")
+def trend_data(request: Request):
     pytrends = TrendReq(hl='en-US', tz=360)
     # Get user input as a list
-    kw_list = request.get_json()
+    kw_list = request.json()['text']#gets JSON and extracts the input keyword
+    
 
     pytrends.build_payload(kw_list, cat=0, timeframe='today 12-m', geo='', gprop='')  # Builds payload for keyword and interest over the last 12 months
     data = pytrends.interest_over_time()  # Returns pandas.DataFrame
@@ -27,16 +46,19 @@ def trend_data():
     global df
     df = pd.concat([df, pd.DataFrame([data_dict])], ignore_index=True)
 
-    return jsonify(data_dict)
+    return {"score": niche_score}
 
-@app.route("/get_last_5")
+
+@app.get("/get_last_5")
 def get_last_5():
     global df
 
-    # Get the last 5 entries from the DataFrame
     last_5_entries = df.tail(5)
     last_5_entries_trimmed = last_5_entries[['interest', 'score']].to_dict(orient='records')
-    return jsonify(last_5_entries_trimmed)
+    return last_5_entries_trimmed
+
+
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    uvicorn.run("fastserver:app", port=5000, reload=True)
+
