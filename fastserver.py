@@ -21,16 +21,15 @@ def root():
 
 df = pd.DataFrame(columns=['interest', 'score'])
 
-
-
 # PyTrends API Route
 @app.post("/pytrends")
 async def trend_data(request: Request):
     pytrends = TrendReq(hl='en-US', tz=360)
     # Get user input as a list
-    kw_list = request.json()['text']#gets JSON and extracts the input keyword
+    entry = await request.json()#gets JSON and extracts the input keyword
+    kw_list = entry["text"]
 
-    pytrends.build_payload(kw_list, cat=0, timeframe='today 12-m', geo='', gprop='')  # Builds payload for keyword and interest over the last 12 months
+    pytrends.build_payload(kw_list, cat=0, timeframe='today 1-m', geo='', gprop='')  # Builds payload for keyword and interest over the last 12 months
     data = pytrends.interest_over_time()  # Returns pandas.DataFrame
 
     # Calculate the niche score by summing the 'score' column
@@ -53,7 +52,6 @@ def get_last_5():
     last_5_entries = df.tail(5)
     last_5_entries_trimmed = last_5_entries[['interest', 'score']].to_dict(orient='records')
     return last_5_entries_trimmed
-
 
 if __name__ == "__main__":
     uvicorn.run("fastserver:app", port=8000, reload=True)
