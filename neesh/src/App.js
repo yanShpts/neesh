@@ -9,9 +9,9 @@ const App = () => {
 
   const calculateScore = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/pytrends', {text: [inputText]});
+      const response = await axios.post("http://localhost:8000/pytrends", { 'text': inputText });
       console.log(response);
-      const interest = response.interest; //TO BE IMPLEMENTED (get score somehow)
+      const interest = response.data.interest; //TO BE IMPLEMENTED (get score somehow)
       const score = response.score;
       setScore(score);
     }
@@ -31,7 +31,7 @@ const App = () => {
   useEffect(() => {
     async function getLast5Entries() {
       try{ 
-        const response = await fetch('http://localhost:5000/get_last_5');
+        const response = await fetch('http://localhost:8000/get_last_5');
         const data = await response.json();
         setLast5Entries(data);
       }
