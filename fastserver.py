@@ -29,7 +29,7 @@ async def trend_data(request: Request):
     entry = await request.json()#gets JSON and extracts the input keyword
     kw_list = entry["text"]
 
-    pytrends.build_payload(kw_list, cat=0, timeframe='today 1-m', geo='', gprop='')  # Builds payload for keyword and interest over the last 12 months
+    pytrends.build_payload(kw_list, cat=None, timeframe='today 1-d', geo='', gprop='')  # Builds payload for keyword and interest over the last 12 months
     data = pytrends.interest_over_time()  # Returns pandas.DataFrame
 
     # Calculate the niche score by summing the 'score' column

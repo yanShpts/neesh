@@ -9,7 +9,7 @@ const App = () => {
 
   const calculateScore = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/pytrends", { 'text': inputText });
+      const response = await axios.post("http://localhost:8000/pytrends", { text: inputText });
       console.log(response);
       const interest = response.data.interest; //TO BE IMPLEMENTED (get score somehow)
       const score = response.score;
