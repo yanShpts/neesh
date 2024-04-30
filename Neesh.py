@@ -14,12 +14,24 @@ class Neesh:
 
         self.interest = tk.StringVar()
 
+        interestEntry = ttk.Entry(mainframe, textvariable=self.interest, justify="left")
+        interestEntry.grid(column=1, row=1, rowspan=2)
+
+        ttk.Button(mainframe, text="Send", command=self.neeshify).grid(column=3, row=3)
+
+    def neeshify(self):
+            pytrends = TrendReq(hl='en-US', tz=360)
+            try:
+                interest = str(self.interest.get())
+                kw_list = [interest] #the keyword to get results for 
+                pytrends.build_payload(kw_list, cat=0, timeframe='today 12-m', geo='', gprop='') #builds payload for keyword and interest over last 12 months
+                print(pytrends.interest_over_time())
+            except:
+                print("Error! Try again.")
+
+                
+
        
-# create a root Tk object
 root = tk.Tk()
-
-# create a FeetToMeters object with the Tk root object as an argument
 Neesh(root)
-
-# call the mainloop method on the Tk root object
 root.mainloop()
