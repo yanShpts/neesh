@@ -3,23 +3,29 @@ from tkinter import ttk
 import pandas as pd 
 from pytrends.request import TrendReq
 
+past_entries = [] #list of tuples to store past results
+
 class Neesh:
 
     def __init__(self, root):
 
         root.title("Neesh")
+        root.configure(bg='light grey')
 
-        mainframe = ttk.Frame(root)
-        mainframe.grid(column=0, row=0)
+        mainframe = ttk.Frame(root, padding="10 10 10 10")
+        mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
 
         self.interest = tk.StringVar()
-        self.score = 'Find your score!'
+        self.score = tk.StringVar()
+        self.score.set('Find your score!')
 
-        interestEntry = ttk.Entry(mainframe, textvariable=self.interest, justify="left")
-        interestEntry.grid(column=1, row=1, rowspan=3)
+        ttk.Label(mainframe, text="Neesh", font=("Arial", 24)).grid(column=1, row=0, sticky=tk.W)
 
-        ttk.Button(mainframe, text="Send", command=self.neeshify).grid(column=2, row=3)
-        ttk.Label(mainframe, textvariable=self.score).grid(column=3, row=4)
+        interestEntry = ttk.Entry(mainframe, textvariable=self.interest, justify="center")
+        interestEntry.grid(column=1, row=1, sticky=(tk.W, tk.E))
+
+        ttk.Button(mainframe, text="Send", command=self.neeshify).grid(column=1, row=2, sticky=tk.W)
+        ttk.Label(mainframe, textvariable=self.score).grid(column=1, row=3, sticky=(tk.W, tk.E))
 
     def neeshify(self):
             pytrends = TrendReq(hl='en-US', tz=360)
@@ -40,8 +46,10 @@ class Neesh:
         return trends[interest].tolist()
     
     def getNiche(self, nicheList):
+        interest = str(self.interest.get())
         self.score = 100-(sum(nicheList)/len(nicheList))
-        print(self.score)
+        past_entries.append((interest, self.score))
+        print(past_entries)
                 
 
        
