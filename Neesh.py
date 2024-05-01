@@ -1,9 +1,10 @@
 import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 import pandas as pd 
 from pytrends.request import TrendReq
 
-pastEntries = [] #list of tuples to store past results
+past_entries = [] #list of tuples to store past results
 
 class Neesh:
 
@@ -11,36 +12,44 @@ class Neesh:
 
         root.title("Neesh")
         root.configure(bg='light grey')
+        root.minsize(800,600)
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
 
         mainframe = ttk.Frame(root, padding="10 10 10 10")
-        mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+        mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        mainframe.columnconfigure(0, weight=1)
+        mainframe.rowconfigure(0, weight=0)
 
         self.interest = tk.StringVar()
 
         self.display = tk.StringVar()
         self.display.set('Find your score!')
 
-        self.leaderboard = tk.StringVar()
-        self.leaderboard.set('Leaderboard:')
+        #LEADERBOARD
+        leader_Title = ttk.Label(mainframe, text="Leaderboard", font=("Verdana 16 underline")).grid(column=0, row=4, sticky=(W,E)) # separate title label to allow for separate styling
+        self.leaderboard = tk.StringVar()   # the actual leaderboard list
+        
+        #LAST 5 ENTRIES
+        last_5_Title = ttk.Label(mainframe, text="Recent Entries", font=("Verdana 16 underline")).grid(column=1, row=4, sticky=(W,E))  # separate title label to allow for separate styling
+        self.lastEntries = tk.StringVar()   # the actual past entries list
 
-        self.lastEntries = tk.StringVar() # New variable to store the last 5 entries
-        self.lastEntries.set('Last 5 Entries:')
+        label = ttk.Label(mainframe, text="Neesh", font=("Verdana bold", 24), anchor="center")
 
-        ttk.Label(mainframe, text="Neesh", font=("Arial", 24)).grid(column=1, row=0, sticky=tk.W)
+        label.grid(column=0, row=0, sticky=(W,E))
 
-        self.interestEntry = ttk.Entry(mainframe, textvariable=self.interest, justify="center")
-        self.interestEntry.grid(column=1, row=1, sticky=(tk.W, tk.E))
+        self.interestEntry = ttk.Entry(mainframe, textvariable=self.interest)
+        self.interestEntry.grid(column=0, row=1, sticky=(W,E))
+        #bind return/enter 
+        self.interestEntry.bind('<Return>', self.neeshify)
 
-        ttk.Button(mainframe, text="Send", command=self.neeshify).grid(column=1, row=2, sticky=tk.W)
-        ttk.Label(mainframe, textvariable=self.display).grid(column=1, row=3, sticky=(tk.W, tk.E))
-        ttk.Label(mainframe, textvariable=self.leaderboard).grid(column=1, row=4, sticky=(tk.W, tk.E))
-
-        ttk.Label(mainframe, textvariable=self.lastEntries).grid(column=2, row=4, sticky=(tk.W, tk.E)) # New label to display the last 5 entries
-
+        ttk.Button(mainframe, text="Send", command=self.neeshify).grid(column=1, row=1, sticky=(W,E))
+        ttk.Label(mainframe, textvariable=self.display, font=("Verdana 15"), anchor="center").grid(column=0, row=3, sticky=(W,E))
+        ttk.Label(mainframe, textvariable=self.leaderboard, font=("Verdana 12")).grid(column=0, row=5, sticky=(W,E))
+        ttk.Label(mainframe, textvariable=self.lastEntries, font=("Verdana 12")).grid(column=1, row=5, sticky=(W,E)) 
 
 
     def neeshify(self, event=None):
-            pytrends = TrendReq(hl='en-US', tz=360)
             nicheList = self.getInterest(self.interest)
             self.getNiche(nicheList)
             self.interestEntry.delete(0, 'end')  # Clear the text box
@@ -57,21 +66,21 @@ class Neesh:
     def getNiche(self, nicheList):
         interest = str(self.interest.get())
         neesh = int(1000-(10*sum(nicheList)/len(nicheList)))
-        if (interest, neesh) not in pastEntries:
-            pastEntries.append((interest, neesh))
-        self.display.set(interest + " has an neesh score of: " + str(neesh))
+        if (interest, neesh) not in past_entries:
+            past_entries.append((interest, neesh))
+        self.display.set(interest + " has a neesh score of: " + str(neesh))
         self.updateLeaderboard()
         self.updateLastEntries()
 
     def updateLeaderboard(self):
-        sortedEntries = sorted(pastEntries, key=lambda x: x[1], reverse=True)
+        sortedEntries = sorted(past_entries, key=lambda x: x[1], reverse=True)
         topEntries = sortedEntries[:5]
-        leaderboardString = "Leaderboard:\n" + "\n".join(f"{entry[0]}: {entry[1]}" for entry in topEntries)
+        leaderboardString = "\n".join(f"{entry[0]}: {entry[1]}" for entry in topEntries)
         self.leaderboard.set(leaderboardString)
 
     def updateLastEntries(self):
-        lastEntries = pastEntries[-5:]
-        lastEntriesString = "Last 5 Entries:\n" + "\n".join(f"{entry[0]}: {entry[1]}" for entry in reversed(lastEntries))
+        lastEntries = past_entries[-5:]
+        lastEntriesString = "\n".join(f"{entry[0]}: {entry[1]}" for entry in reversed(lastEntries))
         self.lastEntries.set(lastEntriesString)
 
 root = tk.Tk()
