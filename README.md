@@ -21,3 +21,12 @@ We will be using the TKinter GUI Framework for the frontend, where users will in
 **Backend**
 
 We will be utilizing the PyTrends API to attain trend information from Google Trends. This information will be used to create an comprehensive score that increases as a users interest becomes more niche.
+
+**Presentation Slides**
+
+https://docs.google.com/presentation/d/1srK8toMQWfRKpqyK5HmguoJqYo4NEQJdxUArcK6kdOQ/edit?usp=sharing
+
+**Final Document**
+
+https://docs.google.com/document/d/12DjBLAJkz9yrc-mTUiooNS3EcyaLvJCUgXE3fcYQZzQ/edit?usp=sharing
+
